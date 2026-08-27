@@ -3,10 +3,10 @@ package dev.rinchan.skillrespecpill.client;
 import dev.rinchan.skillrespecpill.network.PolicySyncPayload;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class ClientPolicyState {
-    private static volatile Map<ResourceLocation, Set<String>> forcedByCategory = Map.of();
+    private static volatile Map<Identifier, Set<String>> forcedByCategory = Map.of();
     private static volatile boolean cascadeRefundEnabled = true;
     private static volatile boolean ready;
 
@@ -28,7 +28,7 @@ public final class ClientPolicyState {
         return ready;
     }
 
-    public static boolean isForced(ResourceLocation categoryId, String nodeId) {
+    public static boolean isForced(Identifier categoryId, String nodeId) {
         return forcedByCategory.getOrDefault(categoryId, Set.of()).contains(nodeId);
     }
 

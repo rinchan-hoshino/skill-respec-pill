@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.puffish.skillsmod.api.Category;
 import net.puffish.skillsmod.api.Skill;
@@ -28,7 +28,7 @@ public final class RespecService {
 
     public static boolean handleNodeClick(
             ServerPlayer player,
-            ResourceLocation categoryId,
+            Identifier categoryId,
             String nodeId) {
         if (player.isSpectator()) return true;
         try {
@@ -36,7 +36,7 @@ public final class RespecService {
             if (category == null) return false;
             Skill skill = category.getSkill(nodeId).orElse(null);
             if (skill == null) return false;
-            Optional<SkillPolicy> policy = PolicyRepository.find(player.getServer(), categoryId);
+            Optional<SkillPolicy> policy = PolicyRepository.find(player.level().getServer(), categoryId);
 
             if (skill.getState(player) == Skill.State.UNLOCKED) {
                 if (policy.map(value -> value.forcedEnabled().contains(nodeId)).orElse(false)) return true;
@@ -67,17 +67,17 @@ public final class RespecService {
         } catch (Exception exception) {
             SkillRespecPill.LOGGER.error(
                     "Node action failed closed for category {} node {} player {}",
-                    categoryId, nodeId, player.getGameProfile().getName(), exception);
+                    categoryId, nodeId, player.getGameProfile().name(), exception);
             return true;
         }
     }
 
-    public static void resetPage(ServerPlayer player, ResourceLocation categoryId) {
+    public static void resetPage(ServerPlayer player, Identifier categoryId) {
         if (player.isSpectator()) return;
         try {
             Category category = SkillsAPI.getCategory(categoryId).orElseThrow(() ->
                     new IllegalStateException("missing Puffish category " + categoryId));
-            Optional<SkillPolicy> policy = PolicyRepository.find(player.getServer(), categoryId);
+            Optional<SkillPolicy> policy = PolicyRepository.find(player.level().getServer(), categoryId);
             SkillGraph graph = validatedGraph(categoryId, policy);
             if (!authorize(player, Action.PAGE_RESET, categoryId, Optional.empty())) return;
 
@@ -92,20 +92,20 @@ public final class RespecService {
             }
             SkillRespecPill.LOGGER.info(
                     "Reset category {} for player {}; refunded {} ordinary nodes",
-                    categoryId, player.getGameProfile().getName(), resetOrder.size());
+                    categoryId, player.getGameProfile().name(), resetOrder.size());
         } catch (Exception exception) {
             SkillRespecPill.LOGGER.error(
                     "Page reset failed closed for category {} player {}",
-                    categoryId, player.getGameProfile().getName(), exception);
+                    categoryId, player.getGameProfile().name(), exception);
         }
     }
 
     public static boolean isForced(
             ServerPlayer player,
-            ResourceLocation categoryId,
+            Identifier categoryId,
             String nodeId) {
         try {
-            return PolicyRepository.find(player.getServer(), categoryId)
+            return PolicyRepository.find(player.level().getServer(), categoryId)
                     .map(policy -> policy.forcedEnabled().contains(nodeId))
                     .orElse(false);
         } catch (Exception exception) {
@@ -125,7 +125,7 @@ public final class RespecService {
     }
 
     public static SkillGraph validatedGraph(
-            ResourceLocation categoryId,
+            Identifier categoryId,
             Optional<SkillPolicy> policy) {
         SkillGraph graph = PuffishGraphSource.extract(PuffishGraphSource.categoryConfig(categoryId));
         if (policy.isPresent()) {
@@ -178,20 +178,20 @@ public final class RespecService {
     private static boolean authorize(
             ServerPlayer player,
             Action action,
-            ResourceLocation categoryId,
+            Identifier categoryId,
             Optional<String> nodeId) {
         try {
             var authorization = SkillRespecPillApi.evaluate(
                     new GateContext(player, action, categoryId, nodeId));
             if (!authorization.allowed()) {
-                authorization.denialReason().ifPresent(reason -> player.displayClientMessage(reason, false));
+                authorization.denialReason().ifPresent(player::sendSystemMessage);
                 return false;
             }
             return true;
         } catch (Exception exception) {
             SkillRespecPill.LOGGER.error(
                     "Authorization gate failed closed for {} in category {} player {}",
-                    action, categoryId, player.getGameProfile().getName(), exception);
+                    action, categoryId, player.getGameProfile().name(), exception);
             return false;
         }
     }

@@ -4,7 +4,7 @@ import dev.rinchan.skillrespecpill.mixin.SkillsModAccessor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.puffish.skillsmod.SkillsMod;
 import net.puffish.skillsmod.config.CategoryConfig;
 
@@ -12,7 +12,7 @@ public final class PuffishGraphSource {
     private PuffishGraphSource() {
     }
 
-    public static CategoryConfig categoryConfig(ResourceLocation categoryId) {
+    public static CategoryConfig categoryConfig(Identifier categoryId) {
         var listener = ((SkillsModAccessor) SkillsMod.getInstance()).skillRespecPill$getCategories();
         var categories = listener.get();
         if (categories.isEmpty()) throw new GraphException("Puffish category configuration is unavailable");

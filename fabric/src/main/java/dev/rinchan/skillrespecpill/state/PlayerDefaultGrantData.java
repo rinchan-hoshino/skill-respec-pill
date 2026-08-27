@@ -4,7 +4,6 @@ import dev.rinchan.skillrespecpill.SkillRespecPill;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 
 public final class PlayerDefaultGrantData {
@@ -16,10 +15,10 @@ public final class PlayerDefaultGrantData {
     public static DefaultGrantState read(Player player) {
         var state = new DefaultGrantState();
         CompoundTag root = holder(player).skillRespecPill$getDefaultGrantData();
-        for (String category : root.getAllKeys()) {
-            ListTag nodes = root.getList(category, Tag.TAG_STRING);
+        for (String category : root.keySet()) {
+            ListTag nodes = root.getListOrEmpty(category);
             for (int index = 0; index < nodes.size(); index++) {
-                state.markGranted(category, nodes.getString(index));
+                nodes.getString(index).ifPresent(node -> state.markGranted(category, node));
             }
         }
         return state;

@@ -1,8 +1,7 @@
 plugins {
     id 'java'
-    id 'fabric-loom' version '1.14.7' apply false
-    id 'net.fabricmc.fabric-loom-companion' version '1.14.7'
-    id 'net.neoforged.moddev' version '2.0.141' apply false
+    id 'net.fabricmc.fabric-loom' version '1.17.20' apply false
+    id 'net.neoforged.moddev' version '2.0.144' apply false
 }
 
 group = mod_group_id
@@ -77,5 +76,5 @@ tasks.register('quickCompile') {
 tasks.register('dualBuild') {
     group = 'build'
     description = 'Builds the Fabric and NeoForge distributable JARs.'
-    dependsOn ':fabric:remapJar', ':neoforge:jar'
+    dependsOn ':fabric:jar', ':neoforge:jar'
 }

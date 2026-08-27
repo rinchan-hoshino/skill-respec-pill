@@ -1,6 +1,6 @@
 # 技能后悔药（Skill Respec Pill）
 
-面向 Minecraft 1.21.1 的 Fabric + NeoForge 多加载器模组，为 Puffish Skills 0.18.3 提供服务端权威的批量前置购买、级联退还和整页重置。
+面向 Minecraft 26.2 的 Fabric + NeoForge 多加载器模组，为 Puffish Skills 0.18.3 提供服务端权威的批量前置购买、级联退还和整页重置。
 
 ## 架构
 
@@ -15,11 +15,11 @@
 
 两个加载器均强制要求：
 
-- Minecraft 1.21.1
+- Minecraft 26.2 / Java 25
 - Puffish Skills 0.18.3
-  - Fabric Curse file `8547653`
-  - NeoForge Curse file `8547654`
-- RinLib 1.0.0 对应 1.21.1 的精确加载器产物
+  - Fabric Curse file `8547664`
+  - NeoForge Curse file `8547663`
+- RinLib 1.0.0 对应 26.2 的精确加载器产物
 - Fabric 额外强制要求 Fabric API
 
 ## 配置

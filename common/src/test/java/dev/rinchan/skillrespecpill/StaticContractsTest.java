@@ -26,13 +26,13 @@ final class StaticContractsTest {
         assertTrue(server.contains("boolean force"));
         assertTrue(server.contains("method = \"lockSkill\""));
         assertTrue(server.contains("require = 1"));
-        assertTrue(screen.contains("lambda$drawContentWithCategory$22"));
+        assertTrue(screen.contains("lambda$drawContentWithCategory$5"));
         assertTrue(screen.contains("Skill.State.AVAILABLE"));
-        assertTrue(screen.contains("lambda$drawContentWithCategory$21"));
+        assertTrue(screen.contains("lambda$drawContentWithCategory$3"));
         assertTrue(screen.contains("BatchPreview"));
         assertTrue(screen.contains("Button.builder"));
         assertTrue(screen.contains("ClientNetworking.send"));
-        assertTrue(screen.contains("method = \"render\""));
+        assertTrue(screen.contains("method = \"extractRenderState\""));
         assertTrue(screen.contains("at = @At(\"HEAD\")"));
         assertTrue(screen.contains("addRenderableWidget"));
         assertFalse(screen.contains("resetButton.render"));
@@ -40,6 +40,7 @@ final class StaticContractsTest {
         assertFalse(screen.contains("net.neoforged"));
         assertFalse(screen.contains("net.fabricmc"));
         assertTrue(mixins.contains("SkillsModAccessor"));
+        assertTrue(mixins.contains("\"compatibilityLevel\": \"JAVA_25\""));
     }
 
     @Test
@@ -59,10 +60,13 @@ final class StaticContractsTest {
     @Test
     void bothLoadersUseExactRequiredArtifactsAndMetadata() throws IOException {
         String properties = read("gradle.properties");
-        assertTrue(properties.contains("puffish_skills_fabric_file=8547653"));
-        assertTrue(properties.contains("puffish_skills_neoforge_file=8547654"));
-        assertTrue(properties.contains("rinlib_fabric_version=1.0.0+1.21.1-fabric"));
-        assertTrue(properties.contains("rinlib_neoforge_version=1.0.0+1.21.1-neoforge"));
+        assertTrue(properties.contains("minecraft_version=26.2"));
+        assertTrue(properties.contains("java_version=25"));
+        assertTrue(properties.contains("puffish_skills_fabric_file=8547664"));
+        assertTrue(properties.contains("puffish_skills_neoforge_file=8547663"));
+        assertTrue(properties.contains("rinlib_fabric_version=1.0.0+26.2-fabric"));
+        assertTrue(properties.contains("rinlib_neoforge_version=1.0.0+26.2-neoforge"));
+        assertTrue(properties.contains("rinlib_runtime_version=1.0.0"));
 
         String fabricBuild = read("fabric/build.gradle");
         String neoBuild = read("neoforge/build.gradle");
@@ -97,8 +101,9 @@ final class StaticContractsTest {
         assertTrue(config.contains("cascade_refund_enabled"));
 
         String reload = read("fabric/src/main/java/dev/rinchan/skillrespecpill/fabric/FabricPolicyReload.java");
-        assertTrue(reload.contains("PackType.SERVER_DATA"));
+        assertTrue(reload.contains("ResourceLoader.get(PackType.SERVER_DATA)"));
         assertTrue(reload.contains("registerReloadListener"));
+        assertFalse(reload.contains("ResourceManagerHelper"));
         assertTrue(reload.contains("PolicyRepository.loadAll(resourceManager)"));
 
         String lifecycle = read("fabric/src/main/java/dev/rinchan/skillrespecpill/fabric/FabricPlayerPolicyLifecycle.java");
@@ -108,12 +113,14 @@ final class StaticContractsTest {
 
         String persistence = read("fabric/src/main/java/dev/rinchan/skillrespecpill/mixin/PlayerDefaultGrantDataMixin.java");
         assertTrue(persistence.contains("readAdditionalSaveData"));
+        assertTrue(persistence.contains("ValueInput"));
         assertTrue(persistence.contains("addAdditionalSaveData"));
+        assertTrue(persistence.contains("ValueOutput"));
 
         String server = read("fabric/src/main/java/dev/rinchan/skillrespecpill/network/SkillRespecNetworking.java");
         String client = read("fabric/src/main/java/dev/rinchan/skillrespecpill/fabric/FabricClientNetworking.java");
-        assertTrue(server.contains("PayloadTypeRegistry.playC2S"));
-        assertTrue(server.contains("PayloadTypeRegistry.playS2C"));
+        assertTrue(server.contains("PayloadTypeRegistry.serverboundPlay"));
+        assertTrue(server.contains("PayloadTypeRegistry.clientboundPlay"));
         assertTrue(server.contains("Server reset packet failed"));
         assertTrue(server.contains("Server policy-request packet failed"));
         assertTrue(server.contains("Server policy-sync packet failed"));

@@ -3,8 +3,9 @@ package dev.rinchan.skillrespecpill.mixin;
 import dev.rinchan.skillrespecpill.state.FabricDefaultGrantDataHolder;
 import dev.rinchan.skillrespecpill.state.PlayerDefaultGrantData;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,17 +18,20 @@ public abstract class PlayerDefaultGrantDataMixin implements FabricDefaultGrantD
     private CompoundTag skillRespecPill$defaultGrantData = new CompoundTag();
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    private void skillRespecPill$readDefaultGrantData(CompoundTag tag, CallbackInfo callback) {
-        if (tag.contains(PlayerDefaultGrantData.ROOT_KEY, Tag.TAG_COMPOUND)) {
-            skillRespecPill$defaultGrantData = tag.getCompound(PlayerDefaultGrantData.ROOT_KEY).copy();
-        } else {
-            skillRespecPill$defaultGrantData = new CompoundTag();
-        }
+    private void skillRespecPill$readDefaultGrantData(ValueInput input, CallbackInfo callback) {
+        skillRespecPill$defaultGrantData = input.read(
+                        PlayerDefaultGrantData.ROOT_KEY,
+                        CompoundTag.CODEC)
+                .map(CompoundTag::copy)
+                .orElseGet(CompoundTag::new);
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-    private void skillRespecPill$writeDefaultGrantData(CompoundTag tag, CallbackInfo callback) {
-        tag.put(PlayerDefaultGrantData.ROOT_KEY, skillRespecPill$defaultGrantData.copy());
+    private void skillRespecPill$writeDefaultGrantData(ValueOutput output, CallbackInfo callback) {
+        output.store(
+                PlayerDefaultGrantData.ROOT_KEY,
+                CompoundTag.CODEC,
+                skillRespecPill$defaultGrantData.copy());
     }
 
     @Override

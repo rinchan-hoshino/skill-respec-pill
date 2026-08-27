@@ -14,7 +14,7 @@ public final class PlayerPolicyService {
 
     public static void reconcileAndSync(ServerPlayer player) {
         try {
-            var policies = PolicyRepository.loadAll(player.getServer());
+            var policies = PolicyRepository.loadAll(player.level().getServer());
             var state = PlayerDefaultGrantData.read(player);
             for (var entry : policies.entrySet()) {
                 SkillsAPI.getCategory(entry.getKey()).ifPresentOrElse(
@@ -28,7 +28,7 @@ public final class PlayerPolicyService {
         } catch (Exception exception) {
             SkillRespecPill.LOGGER.error(
                     "Policy reconciliation failed closed for player {}",
-                    player.getGameProfile().getName(), exception);
+                    player.getGameProfile().name(), exception);
         }
     }
 

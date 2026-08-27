@@ -19,7 +19,7 @@
     "fabricloader": ">=${fabric_loader_version}",
     "fabric-api": "*",
     "minecraft": "=${minecraft_version}",
-    "java": ">=21",
+    "java": ">=25",
     "puffish_skills": "=${puffish_skills_version}",
     "rinlib": "=${rinlib_runtime_version}"
   }
