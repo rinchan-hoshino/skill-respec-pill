@@ -18,6 +18,9 @@ final class StaticContractsTest {
         String screen = read("src/main/java/dev/rinchan/skillrespecpill/mixin/SkillsScreenMixin.java");
         String mixins = read("src/main/resources/skill_respec_pill.mixins.json");
 
+        assertTrue(server.contains("method = \"watchNewPoints\""));
+        assertTrue(server.contains("PointMutationContext.isRefunding"));
+        assertTrue(server.contains("priority = 1100"));
         assertTrue(server.contains("method = \"tryUnlockSkill\""));
         assertTrue(server.contains("boolean force"));
         assertTrue(server.contains("method = \"lockSkill\""));

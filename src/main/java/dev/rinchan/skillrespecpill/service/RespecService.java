@@ -241,14 +241,16 @@ public final class RespecService {
         }
         var changed = new ArrayList<Skill>();
         try {
-            for (Skill skill : prepared) {
-                if (skill.getState(player) != Skill.State.UNLOCKED) continue;
-                skill.lock(player);
-                if (skill.getState(player) == Skill.State.UNLOCKED) {
-                    throw new IllegalStateException("Puffish rejected planned refund " + skill.getId());
+            PointMutationContext.runRefund(player.getUUID(), category.getId().toString(), () -> {
+                for (Skill skill : prepared) {
+                    if (skill.getState(player) != Skill.State.UNLOCKED) continue;
+                    skill.lock(player);
+                    if (skill.getState(player) == Skill.State.UNLOCKED) {
+                        throw new IllegalStateException("Puffish rejected planned refund " + skill.getId());
+                    }
+                    changed.add(skill);
                 }
-                changed.add(skill);
-            }
+            });
         } catch (Exception exception) {
             for (int index = changed.size() - 1; index >= 0; index--) {
                 Skill changedSkill = changed.get(index);
