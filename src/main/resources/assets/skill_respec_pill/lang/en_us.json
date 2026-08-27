@@ -1,0 +1,8 @@
+{
+  "screen.skill_respec_pill.reset_page": "Reset Page",
+  "tooltip.skill_respec_pill.batch_unlock": "Net cost: %s skill points",
+  "tooltip.skill_respec_pill.cascade_refund": "Net refund: %s skill points",
+  "tooltip.skill_respec_pill.forced": "Forced skill; cannot be refunded",
+  "tooltip.skill_respec_pill.cascade_disabled": "Cascade refund is disabled",
+  "tooltip.skill_respec_pill.invalid_graph": "Skill graph unavailable; action will be denied"
+}

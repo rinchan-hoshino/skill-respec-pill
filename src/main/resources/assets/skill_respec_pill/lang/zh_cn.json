@@ -1,0 +1,8 @@
+{
+  "screen.skill_respec_pill.reset_page": "重置本页",
+  "tooltip.skill_respec_pill.batch_unlock": "净消耗：%s 技能点",
+  "tooltip.skill_respec_pill.cascade_refund": "净返还：%s 技能点",
+  "tooltip.skill_respec_pill.forced": "强制技能，无法退还",
+  "tooltip.skill_respec_pill.cascade_disabled": "级联退还已禁用",
+  "tooltip.skill_respec_pill.invalid_graph": "技能图不可用；操作将被拒绝"
+}

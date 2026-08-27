@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "dev.rinchan.skillrespecpill.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "SkillsModAccessor",
+    "SkillsModMixin"
+  ],
+  "client": [
+    "SkillsScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
