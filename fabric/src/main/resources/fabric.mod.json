@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": ["${mod_authors}"],
+  "license": "${mod_license}",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["dev.rinchan.skillrespecpill.SkillRespecPill"],
+    "client": ["dev.rinchan.skillrespecpill.fabric.SkillRespecPillFabricClient"]
+  },
+  "mixins": [
+    "skill_respec_pill.mixins.json",
+    "skill_respec_pill.fabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "minecraft": "=${minecraft_version}",
+    "java": ">=21",
+    "puffish_skills": "=${puffish_skills_version}",
+    "rinlib": "=${rinlib_runtime_version}"
+  }
+}

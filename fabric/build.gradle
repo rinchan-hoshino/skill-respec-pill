@@ -1,0 +1,68 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'fabric-loom'
+}
+
+base {
+    archivesName = "${rootProject.mod_id}-fabric"
+}
+
+sourceSets.main.java.srcDir rootProject.file('common/src/main/java')
+sourceSets.main.resources.srcDir rootProject.file('common/src/main/resources')
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    modImplementation "curse.maven:puffish-skills-835091:${rootProject.puffish_skills_fabric_file}"
+    modImplementation "maven.modrinth:rinlib:${rootProject.rinlib_fabric_version}"
+}
+
+def resourceProperties = [
+        mod_id                : rootProject.mod_id,
+        mod_name              : rootProject.mod_name,
+        mod_version           : rootProject.mod_version,
+        mod_license           : rootProject.mod_license,
+        mod_authors           : rootProject.mod_authors,
+        mod_description       : rootProject.mod_description,
+        minecraft_version     : rootProject.minecraft_version,
+        fabric_loader_version : rootProject.fabric_loader_version,
+        puffish_skills_version: rootProject.puffish_skills_version,
+        rinlib_runtime_version: rootProject.rinlib_runtime_version
+]
+
+tasks.named('processResources') {
+    inputs.properties(resourceProperties)
+    filesMatching('fabric.mod.json') {
+        expand resourceProperties
+    }
+}
+
+def licenseFile = rootProject.file('LICENSE')
+def manifestModId = rootProject.mod_id.toString()
+def manifestModVersion = rootProject.mod_version.toString()
+
+tasks.named('jar', Jar) {
+    from(licenseFile) {
+        rename { "LICENSE_${manifestModId}" }
+    }
+    manifest {
+        attributes(
+                'Specification-Title': manifestModId,
+                'Specification-Version': manifestModVersion,
+                'Implementation-Title': manifestModId,
+                'Implementation-Version': manifestModVersion
+        )
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact tasks.named('remapJar')
+            artifactId = "${rootProject.mod_id}-fabric"
+        }
+    }
+}

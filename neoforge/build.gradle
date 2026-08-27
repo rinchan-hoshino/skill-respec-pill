@@ -1,0 +1,75 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev'
+}
+
+base {
+    archivesName = "${rootProject.mod_id}-neoforge"
+}
+
+sourceSets.main.java.srcDir rootProject.file('common/src/main/java')
+sourceSets.main.resources.srcDir rootProject.file('common/src/main/resources')
+sourceSets.main.resources.srcDir tasks.register('generateModMetadata', ProcessResources) {
+    def properties = [
+            minecraft_version_range : rootProject.minecraft_version_range,
+            neo_version_range       : rootProject.neo_version_range,
+            loader_version_range    : rootProject.loader_version_range,
+            puffish_skills_version  : rootProject.puffish_skills_version,
+            rinlib_runtime_version  : rootProject.rinlib_runtime_version,
+            mod_id                  : rootProject.mod_id,
+            mod_name                : rootProject.mod_name,
+            mod_license             : rootProject.mod_license,
+            mod_version             : rootProject.mod_version,
+            mod_authors             : rootProject.mod_authors,
+            mod_description         : rootProject.mod_description
+    ]
+    inputs.properties(properties)
+    filteringCharset = 'UTF-8'
+    expand(properties)
+    from 'src/main/templates'
+    into layout.buildDirectory.dir('generated/sources/modMetadata')
+}
+
+neoForge {
+    version = rootProject.neo_version
+    mods {
+        "${rootProject.mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+neoForge.ideSyncTask tasks.named('generateModMetadata')
+
+dependencies {
+    implementation "curse.maven:puffish-skills-835091:${rootProject.puffish_skills_neoforge_file}"
+    implementation "maven.modrinth:rinlib:${rootProject.rinlib_neoforge_version}"
+}
+
+def licenseFile = rootProject.file('LICENSE')
+def manifestModId = rootProject.mod_id.toString()
+def manifestModVersion = rootProject.mod_version.toString()
+
+tasks.named('jar', Jar) {
+    from(licenseFile) {
+        rename { "LICENSE_${manifestModId}" }
+    }
+    manifest {
+        attributes(
+                'Specification-Title': manifestModId,
+                'Specification-Version': manifestModVersion,
+                'Implementation-Title': manifestModId,
+                'Implementation-Version': manifestModVersion
+        )
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact tasks.named('jar')
+            artifactId = "${rootProject.mod_id}-neoforge"
+        }
+    }
+}

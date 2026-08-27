@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.rinchan.skillrespecpill.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "PlayerDefaultGrantDataMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
