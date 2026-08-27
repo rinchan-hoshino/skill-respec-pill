@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -16,18 +16,18 @@ public final class PolicyRepository {
     private PolicyRepository() {
     }
 
-    public static Map<ResourceLocation, SkillPolicy> loadAll(MinecraftServer server) {
+    public static Map<Identifier, SkillPolicy> loadAll(MinecraftServer server) {
         return loadAll(server.getResourceManager());
     }
 
-    public static Map<ResourceLocation, SkillPolicy> loadAll(ResourceManager resourceManager) {
-        var byCategory = new TreeMap<ResourceLocation, SkillPolicy>();
+    public static Map<Identifier, SkillPolicy> loadAll(ResourceManager resourceManager) {
+        var byCategory = new TreeMap<Identifier, SkillPolicy>();
         var resources = new TreeMap<>(resourceManager.listResources(
                 ROOT, id -> id.getPath().endsWith(".json")));
         for (var entry : resources.entrySet()) {
             try (var reader = new InputStreamReader(entry.getValue().open(), StandardCharsets.UTF_8)) {
                 SkillPolicy policy = SkillPolicy.parse(reader);
-                ResourceLocation category = ResourceLocation.parse(policy.category());
+                Identifier category = Identifier.parse(policy.category());
                 if (byCategory.putIfAbsent(category, policy) != null) {
                     throw new IllegalArgumentException("duplicate policy for category " + category);
                 }
@@ -39,7 +39,7 @@ public final class PolicyRepository {
         return Map.copyOf(byCategory);
     }
 
-    public static Optional<SkillPolicy> find(MinecraftServer server, ResourceLocation categoryId) {
+    public static Optional<SkillPolicy> find(MinecraftServer server, Identifier categoryId) {
         return Optional.ofNullable(loadAll(server).get(categoryId));
     }
 }

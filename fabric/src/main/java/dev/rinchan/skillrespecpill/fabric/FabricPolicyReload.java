@@ -2,9 +2,8 @@ package dev.rinchan.skillrespecpill.fabric;
 
 import dev.rinchan.skillrespecpill.SkillRespecPill;
 import dev.rinchan.skillrespecpill.policy.PolicyRepository;
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -16,18 +15,12 @@ public final class FabricPolicyReload {
     }
 
     public static void register() {
-        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new Listener());
+        ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(Listener.ID, new Listener());
     }
 
-    private static final class Listener extends SimplePreparableReloadListener<Unit>
-            implements IdentifiableResourceReloadListener {
-        private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(
+    private static final class Listener extends SimplePreparableReloadListener<Unit> {
+        private static final Identifier ID = Identifier.fromNamespaceAndPath(
                 SkillRespecPill.MOD_ID, "policies");
-
-        @Override
-        public ResourceLocation getFabricId() {
-            return ID;
-        }
 
         @Override
         protected Unit prepare(ResourceManager resourceManager, ProfilerFiller profiler) {

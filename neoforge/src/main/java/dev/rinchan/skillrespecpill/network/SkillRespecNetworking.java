@@ -8,7 +8,7 @@ import dev.rinchan.skillrespecpill.policy.SkillPolicy;
 import dev.rinchan.skillrespecpill.service.RespecService;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -56,25 +56,25 @@ public final class SkillRespecNetworking {
 
     private static void syncCurrentPolicies(ServerPlayer player) {
         try {
-            syncPolicies(player, PolicyRepository.loadAll(player.getServer()));
+            syncPolicies(player, PolicyRepository.loadAll(player.level().getServer()));
         } catch (Exception exception) {
             SkillRespecPill.LOGGER.error(
                     "Policy preview sync failed closed for player {}",
-                    player.getGameProfile().getName(), exception);
+                    player.getGameProfile().name(), exception);
         }
     }
 
     public static void syncPolicies(
             ServerPlayer player,
-            Map<ResourceLocation, SkillPolicy> policies) {
-        var forced = new HashMap<ResourceLocation, java.util.Set<String>>();
+            Map<Identifier, SkillPolicy> policies) {
+        var forced = new HashMap<Identifier, java.util.Set<String>>();
         policies.forEach((category, policy) -> forced.put(category, policy.forcedEnabled()));
         try {
             PacketDistributor.sendToPlayer(player,
                     new PolicySyncPayload(forced, SkillRespecConfig.cascadeRefundEnabled()));
         } catch (RuntimeException exception) {
             SkillRespecPill.LOGGER.error("Server policy-sync packet failed for player {}",
-                    player.getGameProfile().getName(), exception);
+                    player.getGameProfile().name(), exception);
         }
     }
 }

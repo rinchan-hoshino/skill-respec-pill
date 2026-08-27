@@ -4,7 +4,6 @@ import dev.rinchan.skillrespecpill.SkillRespecPill;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 
 public final class PlayerDefaultGrantData {
@@ -15,11 +14,11 @@ public final class PlayerDefaultGrantData {
 
     public static DefaultGrantState read(Player player) {
         var state = new DefaultGrantState();
-        CompoundTag root = player.getPersistentData().getCompound(ROOT_KEY);
-        for (String category : root.getAllKeys()) {
-            ListTag nodes = root.getList(category, Tag.TAG_STRING);
+        CompoundTag root = player.getPersistentData().getCompoundOrEmpty(ROOT_KEY);
+        for (String category : root.keySet()) {
+            ListTag nodes = root.getListOrEmpty(category);
             for (int index = 0; index < nodes.size(); index++) {
-                state.markGranted(category, nodes.getString(index));
+                nodes.getString(index).ifPresent(node -> state.markGranted(category, node));
             }
         }
         return state;
@@ -37,9 +36,8 @@ public final class PlayerDefaultGrantData {
 
     public static void copy(Player source, Player target) {
         CompoundTag sourceData = source.getPersistentData();
-        if (sourceData.contains(ROOT_KEY, Tag.TAG_COMPOUND)) {
-            target.getPersistentData().put(ROOT_KEY, sourceData.getCompound(ROOT_KEY).copy());
-        }
+        sourceData.getCompound(ROOT_KEY).ifPresent(root ->
+                target.getPersistentData().put(ROOT_KEY, root.copy()));
     }
 
     private enum MapEntryComparator implements java.util.Comparator<java.util.Map.Entry<String, java.util.Set<String>>> {

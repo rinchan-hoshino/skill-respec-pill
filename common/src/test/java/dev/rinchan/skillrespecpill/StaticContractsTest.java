@@ -26,13 +26,15 @@ final class StaticContractsTest {
         assertTrue(server.contains("boolean force"));
         assertTrue(server.contains("method = \"lockSkill\""));
         assertTrue(server.contains("require = 1"));
-        assertTrue(screen.contains("lambda$drawContentWithCategory$22"));
-        assertTrue(screen.contains("Skill.State.AVAILABLE"));
-        assertTrue(screen.contains("lambda$drawContentWithCategory$21"));
+        assertTrue(screen.contains("lambda$drawContentWithCategory$5"));
+        assertTrue(screen.contains("state == Skill.State.LOCKED ? Skill.State.AVAILABLE : state"));
+        assertTrue(screen.contains("lambda$drawContentWithCategory$3"));
         assertTrue(screen.contains("BatchPreview"));
         assertTrue(screen.contains("Button.builder"));
         assertTrue(screen.contains("ClientNetworking.send"));
-        assertTrue(screen.contains("method = \"render\""));
+        assertTrue(screen.contains("method = \"extractRenderState\""));
+        assertTrue(screen.contains("GuiGraphicsExtractor"));
+        assertTrue(screen.contains("setTooltipForNextFrame"));
         assertTrue(screen.contains("at = @At(\"HEAD\")"));
         assertTrue(screen.contains("addRenderableWidget"));
         assertFalse(screen.contains("resetButton.render"));
@@ -59,10 +61,13 @@ final class StaticContractsTest {
     @Test
     void bothLoadersUseExactRequiredArtifactsAndMetadata() throws IOException {
         String properties = read("gradle.properties");
-        assertTrue(properties.contains("puffish_skills_fabric_file=8547653"));
-        assertTrue(properties.contains("puffish_skills_neoforge_file=8547654"));
-        assertTrue(properties.contains("rinlib_fabric_version=1.0.0+1.21.1-fabric"));
-        assertTrue(properties.contains("rinlib_neoforge_version=1.0.0+1.21.1-neoforge"));
+        assertTrue(properties.contains("minecraft_version=26.1.2"));
+        assertTrue(properties.contains("java_version=25"));
+        assertTrue(properties.contains("puffish_skills_fabric_file=8547681"));
+        assertTrue(properties.contains("puffish_skills_neoforge_file=8547682"));
+        assertTrue(properties.contains("rinlib_fabric_version=1.0.0+26.1.2-fabric"));
+        assertTrue(properties.contains("rinlib_neoforge_version=1.0.0+26.1.2-neoforge"));
+        assertTrue(properties.contains("rinlib_runtime_version=1.0.0+26.1.2"));
 
         String fabricBuild = read("fabric/build.gradle");
         String neoBuild = read("neoforge/build.gradle");
@@ -75,6 +80,7 @@ final class StaticContractsTest {
         assertEquals("${mod_id}", fabric.get("id").getAsString());
         assertEquals("${mod_name}", fabric.get("name").getAsString());
         assertEquals("*", fabric.get("environment").getAsString());
+        assertEquals(">=25", fabric.getAsJsonObject("depends").get("java").getAsString());
         var depends = fabric.getAsJsonObject("depends");
         for (String dependency : List.of("fabric-api", "puffish_skills", "rinlib")) {
             assertTrue(depends.has(dependency));
@@ -98,7 +104,8 @@ final class StaticContractsTest {
 
         String reload = read("fabric/src/main/java/dev/rinchan/skillrespecpill/fabric/FabricPolicyReload.java");
         assertTrue(reload.contains("PackType.SERVER_DATA"));
-        assertTrue(reload.contains("registerReloadListener"));
+        assertTrue(reload.contains("ResourceLoader.get(PackType.SERVER_DATA)"));
+        assertTrue(reload.contains("registerReloadListener(Listener.ID"));
         assertTrue(reload.contains("PolicyRepository.loadAll(resourceManager)"));
 
         String lifecycle = read("fabric/src/main/java/dev/rinchan/skillrespecpill/fabric/FabricPlayerPolicyLifecycle.java");
@@ -109,11 +116,14 @@ final class StaticContractsTest {
         String persistence = read("fabric/src/main/java/dev/rinchan/skillrespecpill/mixin/PlayerDefaultGrantDataMixin.java");
         assertTrue(persistence.contains("readAdditionalSaveData"));
         assertTrue(persistence.contains("addAdditionalSaveData"));
+        assertTrue(persistence.contains("ValueInput"));
+        assertTrue(persistence.contains("ValueOutput"));
+        assertTrue(persistence.contains("CompoundTag.CODEC"));
 
         String server = read("fabric/src/main/java/dev/rinchan/skillrespecpill/network/SkillRespecNetworking.java");
         String client = read("fabric/src/main/java/dev/rinchan/skillrespecpill/fabric/FabricClientNetworking.java");
-        assertTrue(server.contains("PayloadTypeRegistry.playC2S"));
-        assertTrue(server.contains("PayloadTypeRegistry.playS2C"));
+        assertTrue(server.contains("PayloadTypeRegistry.serverboundPlay"));
+        assertTrue(server.contains("PayloadTypeRegistry.clientboundPlay"));
         assertTrue(server.contains("Server reset packet failed"));
         assertTrue(server.contains("Server policy-request packet failed"));
         assertTrue(server.contains("Server policy-sync packet failed"));
@@ -131,6 +141,28 @@ final class StaticContractsTest {
         assertTrue(network.contains("playToClient(PolicySyncPayload.TYPE"));
         assertTrue(network.contains("Server reset packet failed"));
         assertTrue(network.contains("Client policy-sync packet failed"));
+        String client = read("neoforge/src/main/java/dev/rinchan/skillrespecpill/platform/ClientNetworking.java");
+        assertTrue(client.contains("ClientPacketDistributor.sendToServer"));
+    }
+
+    @Test
+    void schemaStateAndServerSafeguardsRemainExact() throws IOException {
+        String policy = read("common/src/main/java/dev/rinchan/skillrespecpill/policy/SkillPolicy.java");
+        assertTrue(policy.contains("Set.of(\"category\", \"default_enabled\", \"forced_enabled\")"));
+        assertFalse(policy.contains("starting_points"));
+
+        String state = read("common/src/main/java/dev/rinchan/skillrespecpill/state/DefaultGrantState.java");
+        assertTrue(state.contains("grantedByCategory"));
+        assertTrue(state.contains("getOrDefault(category"));
+
+        String service = read("common/src/main/java/dev/rinchan/skillrespecpill/service/RespecService.java");
+        assertTrue(service.contains("skill.getState(player) == Skill.State.EXCLUDED"));
+        assertTrue(service.contains("cascadeRefundEnabled"));
+        assertTrue(service.contains("plan.nodeIds().stream().anyMatch(forced::contains)"));
+        assertTrue(service.contains("restoreDeclaredBaseline"));
+        assertTrue(service.contains("Action.CASCADE_REFUND"));
+        assertTrue(service.contains("Action.PAGE_RESET"));
+        assertTrue(service.contains("sendSystemMessage"));
     }
 
     @Test

@@ -4,7 +4,7 @@ import dev.rinchan.skillrespecpill.api.internal.DeterministicGateSet;
 import java.util.EnumMap;
 import java.util.Optional;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class SkillRespecPillApi {
@@ -18,7 +18,7 @@ public final class SkillRespecPillApi {
     private SkillRespecPillApi() {
     }
 
-    public static void registerGate(Action action, ResourceLocation gateId, AuthorizationGate gate) {
+    public static void registerGate(Action action, Identifier gateId, AuthorizationGate gate) {
         if (action == null || gateId == null || gate == null) {
             throw new IllegalArgumentException("action, gate id, and gate are required");
         }
@@ -44,7 +44,7 @@ public final class SkillRespecPillApi {
     public record GateContext(
             ServerPlayer player,
             Action action,
-            ResourceLocation categoryId,
+            Identifier categoryId,
             Optional<String> nodeId) {
         public GateContext {
             if (player == null || action == null || categoryId == null || nodeId == null) {

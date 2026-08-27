@@ -2,7 +2,7 @@ package dev.rinchan.skillrespecpill.mixin;
 
 import dev.rinchan.skillrespecpill.service.PointMutationContext;
 import dev.rinchan.skillrespecpill.service.RespecService;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.puffish.skillsmod.SkillsMod;
 import net.puffish.skillsmod.config.CategoryConfig;
@@ -31,7 +31,7 @@ public abstract class SkillsModMixin {
     @Inject(method = "tryUnlockSkill", at = @At("HEAD"), cancellable = true, remap = false, require = 1)
     private void skillRespecPill$handleNodeClick(
             ServerPlayer player,
-            ResourceLocation categoryId,
+            Identifier categoryId,
             String nodeId,
             boolean force,
             CallbackInfo callback) {
@@ -41,7 +41,7 @@ public abstract class SkillsModMixin {
     @Inject(method = "lockSkill", at = @At("HEAD"), cancellable = true, remap = false, require = 1)
     private void skillRespecPill$protectForcedNode(
             ServerPlayer player,
-            ResourceLocation categoryId,
+            Identifier categoryId,
             String nodeId,
             CallbackInfo callback) {
         if (RespecService.isForced(player, categoryId, nodeId)) callback.cancel();
@@ -50,7 +50,7 @@ public abstract class SkillsModMixin {
     @Inject(method = "resetSkills", at = @At("HEAD"), cancellable = true, remap = false, require = 1)
     private void skillRespecPill$replaceResetWithProtectedReset(
             ServerPlayer player,
-            ResourceLocation categoryId,
+            Identifier categoryId,
             CallbackInfo callback) {
         RespecService.resetPage(player, categoryId);
         callback.cancel();

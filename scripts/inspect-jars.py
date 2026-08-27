@@ -41,7 +41,9 @@ for loader, jar in JARS.items():
             require(metadata["environment"] == "*", "Fabric is not client+server")
             require(metadata["depends"]["fabric-api"] == "*", "Fabric API is not mandatory")
             require(metadata["depends"]["puffish_skills"] == "=0.18.3", "Fabric Puffish version is not exact")
-            require(metadata["depends"]["rinlib"] == "=1.0.0+1.21.1", "Fabric RinLib version is not exact")
+            require(metadata["depends"]["minecraft"] == "=26.1.2", "Fabric Minecraft version is not exact")
+            require(metadata["depends"]["java"] == ">=25", "Fabric Java version is not exact")
+            require(metadata["depends"]["rinlib"] == "=1.0.0+26.1.2", "Fabric RinLib version is not exact")
         else:
             require("META-INF/neoforge.mods.toml" in names, "NeoForge metadata missing")
             require("fabric.mod.json" not in names, "NeoForge JAR contains Fabric metadata")
@@ -50,7 +52,9 @@ for loader, jar in JARS.items():
             require('displayName="技能后悔药"' in metadata, "NeoForge display identity changed")
             require('modId="puffish_skills"' in metadata and 'versionRange="[0.18.3]"' in metadata,
                     "NeoForge Puffish dependency is not exact")
-            require('modId="rinlib"' in metadata and 'versionRange="[1.0.0+1.21.1]"' in metadata,
+            require('modId="minecraft"' in metadata and 'versionRange="[26.1.2,26.1.3)"' in metadata,
+                    "NeoForge Minecraft version is not exact")
+            require('modId="rinlib"' in metadata and 'versionRange="[1.0.0+26.1.2]"' in metadata,
                     "NeoForge RinLib dependency is not exact")
     digest = hashlib.sha256(jar.read_bytes()).hexdigest()
     print(f"{loader}: {jar.relative_to(ROOT)} sha256={digest}")

@@ -8,7 +8,7 @@ import dev.rinchan.skillrespecpill.platform.ClientNetworking;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -52,9 +52,9 @@ public abstract class SkillsScreenMixin extends Screen {
         this.addRenderableWidget(skillRespecPill$resetButton);
     }
 
-    @Inject(method = "render", at = @At("HEAD"), remap = false, require = 1)
+    @Inject(method = "extractRenderState", at = @At("HEAD"), remap = false, require = 1)
     private void skillRespecPill$renderResetButton(
-            GuiGraphics graphics,
+            GuiGraphicsExtractor graphics,
             int mouseX,
             int mouseY,
             float partialTick,
@@ -65,7 +65,7 @@ public abstract class SkillsScreenMixin extends Screen {
     }
 
     @Redirect(
-            method = "lambda$drawContentWithCategory$22",
+            method = "lambda$drawContentWithCategory$5",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/puffish/skillsmod/client/data/ClientCategoryData;getSkillState(Lnet/puffish/skillsmod/client/config/skill/ClientSkillConfig;)Lnet/puffish/skillsmod/api/Skill$State;"),
@@ -79,19 +79,23 @@ public abstract class SkillsScreenMixin extends Screen {
     }
 
     @Redirect(
-            method = "lambda$drawContentWithCategory$21",
+            method = "lambda$drawContentWithCategory$3",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/puffish/skillsmod/client/gui/SkillsScreen;setTooltipForNextRenderPass(Ljava/util/List;)V"),
+                    target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;setTooltipForNextFrame(Ljava/util/List;II)V"),
             remap = false,
             require = 1)
     private void skillRespecPill$appendNetPreview(
-            SkillsScreen screen,
+            GuiGraphicsExtractor tooltipGraphics,
             List<FormattedCharSequence> lines,
+            int tooltipX,
+            int tooltipY,
             ClientCategoryConfig config,
+            GuiGraphicsExtractor graphics,
+            int mouseX,
+            int mouseY,
             ClientCategoryData data,
             ConnectionBatchedRenderer connectionRenderer,
-            GuiGraphics graphics,
             ClientSkillConfig skill) {
         BatchPreview.Preview preview = BatchPreview.forNode(config, data, skill);
         Component line = switch (preview.action()) {
@@ -109,6 +113,6 @@ public abstract class SkillsScreenMixin extends Screen {
                     .withStyle(ChatFormatting.DARK_RED);
         };
         lines.add(line.getVisualOrderText());
-        this.setTooltipForNextRenderPass(lines);
+        tooltipGraphics.setTooltipForNextFrame(lines, tooltipX, tooltipY);
     }
 }

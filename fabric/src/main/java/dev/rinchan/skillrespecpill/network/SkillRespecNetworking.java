@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class SkillRespecNetworking {
@@ -17,9 +17,9 @@ public final class SkillRespecNetworking {
     }
 
     public static void registerServer() {
-        PayloadTypeRegistry.playC2S().register(ResetPagePayload.TYPE, ResetPagePayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(PolicyRequestPayload.TYPE, PolicyRequestPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(PolicySyncPayload.TYPE, PolicySyncPayload.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(ResetPagePayload.TYPE, ResetPagePayload.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(PolicyRequestPayload.TYPE, PolicyRequestPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(PolicySyncPayload.TYPE, PolicySyncPayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(ResetPagePayload.TYPE, (payload, context) ->
                 context.server().execute(() -> {
@@ -42,25 +42,25 @@ public final class SkillRespecNetworking {
 
     private static void syncCurrentPolicies(ServerPlayer player) {
         try {
-            syncPolicies(player, PolicyRepository.loadAll(player.getServer()));
+            syncPolicies(player, PolicyRepository.loadAll(player.level().getServer()));
         } catch (Exception exception) {
             SkillRespecPill.LOGGER.error(
                     "Policy preview sync failed closed for player {}",
-                    player.getGameProfile().getName(), exception);
+                    player.getGameProfile().name(), exception);
         }
     }
 
     public static void syncPolicies(
             ServerPlayer player,
-            Map<ResourceLocation, SkillPolicy> policies) {
-        var forced = new HashMap<ResourceLocation, java.util.Set<String>>();
+            Map<Identifier, SkillPolicy> policies) {
+        var forced = new HashMap<Identifier, java.util.Set<String>>();
         policies.forEach((category, policy) -> forced.put(category, policy.forcedEnabled()));
         try {
             ServerPlayNetworking.send(player,
                     new PolicySyncPayload(forced, SkillRespecConfig.cascadeRefundEnabled()));
         } catch (RuntimeException exception) {
             SkillRespecPill.LOGGER.error("Server policy-sync packet failed for player {}",
-                    player.getGameProfile().getName(), exception);
+                    player.getGameProfile().name(), exception);
         }
     }
 }
