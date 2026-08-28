@@ -24,7 +24,7 @@ public final class SkillRespecConfig {
                 Files.createDirectories(path.getParent());
                 properties.setProperty(CASCADE_REFUND_KEY, "true");
                 try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-                    properties.store(writer, "技能后悔药 server configuration");
+                    properties.store(writer, "Skill Respec Pill server configuration");
                 }
             }
             try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {

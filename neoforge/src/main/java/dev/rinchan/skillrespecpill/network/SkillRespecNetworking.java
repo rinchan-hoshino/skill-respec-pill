@@ -18,7 +18,7 @@ public final class SkillRespecNetworking {
     }
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar("1.0.0");
+        var registrar = event.registrar("1.0.1");
         registrar.playToServer(ResetPagePayload.TYPE, ResetPagePayload.CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     try {

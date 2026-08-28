@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- Correct the public English display name to **Skill Respec Pill**; `技能后悔药` remains the Simplified Chinese localized name.
+- Keep every gameplay, policy, persistence and networking contract unchanged from 1.0.0.
+
 ## 1.0.0
 
 - Add server-authoritative batch prerequisite purchasing with exact aggregate cost checks.

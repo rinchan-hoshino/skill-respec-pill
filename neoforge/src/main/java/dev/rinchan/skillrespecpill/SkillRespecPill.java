@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 @Mod(SkillRespecPill.MOD_ID)
 public final class SkillRespecPill {
     public static final String MOD_ID = "skill_respec_pill";
-    public static final Logger LOGGER = LoggerFactory.getLogger("技能后悔药");
+    public static final Logger LOGGER = LoggerFactory.getLogger("Skill Respec Pill");
 
     public SkillRespecPill(IEventBus modBus, ModContainer container) {
         container.registerConfig(ModConfig.Type.SERVER, SkillRespecConfig.SPEC);
