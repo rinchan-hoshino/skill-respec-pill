@@ -26,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = SkillsScreen.class, remap = false)
 public abstract class SkillsScreenMixin extends Screen {
@@ -52,7 +53,8 @@ public abstract class SkillsScreenMixin extends Screen {
         this.addRenderableWidget(skillRespecPill$resetButton);
     }
 
-    @Inject(method = "render", at = @At("HEAD"), remap = false, require = 1)
+    // Puffish Skills 0.18.3 bypasses Screen's widget render and click dispatch.
+    @Inject(method = "render", at = @At("TAIL"), remap = false, require = 1)
     private void skillRespecPill$renderResetButton(
             GuiGraphics graphics,
             int mouseX,
@@ -60,7 +62,23 @@ public abstract class SkillsScreenMixin extends Screen {
             float partialTick,
             CallbackInfo callback) {
         if (skillRespecPill$resetButton != null) {
-            skillRespecPill$resetButton.active = optActiveCategoryData.isPresent();
+            boolean hasActivePage = optActiveCategoryData.isPresent();
+            skillRespecPill$resetButton.active = hasActivePage;
+            skillRespecPill$resetButton.visible = hasActivePage;
+            skillRespecPill$resetButton.render(graphics, mouseX, mouseY, partialTick);
+        }
+    }
+
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true, remap = false, require = 1)
+    private void skillRespecPill$clickResetButton(
+            double mouseX,
+            double mouseY,
+            int button,
+            CallbackInfoReturnable<Boolean> callback) {
+        if (skillRespecPill$resetButton != null
+                && skillRespecPill$resetButton.visible
+                && skillRespecPill$resetButton.mouseClicked(mouseX, mouseY, button)) {
+            callback.setReturnValue(true);
         }
     }
 

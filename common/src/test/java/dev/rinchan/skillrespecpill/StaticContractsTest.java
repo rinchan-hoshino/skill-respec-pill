@@ -33,10 +33,12 @@ final class StaticContractsTest {
         assertTrue(screen.contains("Button.builder"));
         assertTrue(screen.contains("ClientNetworking.send"));
         assertTrue(screen.contains("method = \"render\""));
-        assertTrue(screen.contains("at = @At(\"HEAD\")"));
+        assertTrue(screen.contains("at = @At(\"TAIL\")"));
         assertTrue(screen.contains("addRenderableWidget"));
-        assertFalse(screen.contains("resetButton.render"));
-        assertFalse(screen.contains("method = \"mouseClicked\""));
+        assertTrue(screen.contains("resetButton.render"));
+        assertTrue(screen.contains("method = \"mouseClicked\""));
+        assertTrue(screen.contains("cancellable = true"));
+        assertTrue(screen.contains("resetButton.mouseClicked"));
         assertFalse(screen.contains("net.neoforged"));
         assertFalse(screen.contains("net.fabricmc"));
         assertTrue(mixins.contains("SkillsModAccessor"));
