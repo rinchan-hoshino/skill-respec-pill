@@ -5,9 +5,15 @@ from pathlib import Path
 from zipfile import ZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
+PROPERTIES = dict(
+    line.split("=", 1)
+    for line in (ROOT / "gradle.properties").read_text().splitlines()
+    if line and not line.startswith("#") and "=" in line
+)
+VERSION = PROPERTIES["mod_version"]
 JARS = {
-    "fabric": ROOT / "fabric/build/libs/skill_respec_pill-fabric-1.0.1.jar",
-    "neoforge": ROOT / "neoforge/build/libs/skill_respec_pill-neoforge-1.0.1.jar",
+    "fabric": ROOT / f"fabric/build/libs/skill_respec_pill-fabric-{VERSION}.jar",
+    "neoforge": ROOT / f"neoforge/build/libs/skill_respec_pill-neoforge-{VERSION}.jar",
 }
 COMMON_ENTRIES = {
     "dev/rinchan/skillrespecpill/api/SkillRespecPillApi.class",
