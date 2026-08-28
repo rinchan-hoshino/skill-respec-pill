@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -26,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = SkillsScreen.class, remap = false)
 public abstract class SkillsScreenMixin extends Screen {
@@ -52,7 +54,8 @@ public abstract class SkillsScreenMixin extends Screen {
         this.addRenderableWidget(skillRespecPill$resetButton);
     }
 
-    @Inject(method = "extractRenderState", at = @At("HEAD"), remap = false, require = 1)
+    // Puffish Skills 0.18.3 bypasses Screen's widget render-state and click dispatch.
+    @Inject(method = "extractRenderState", at = @At("TAIL"), remap = false, require = 1)
     private void skillRespecPill$extractResetButtonState(
             GuiGraphicsExtractor graphics,
             int mouseX,
@@ -60,7 +63,22 @@ public abstract class SkillsScreenMixin extends Screen {
             float partialTick,
             CallbackInfo callback) {
         if (skillRespecPill$resetButton != null) {
-            skillRespecPill$resetButton.active = optActiveCategoryData.isPresent();
+            boolean hasActivePage = optActiveCategoryData.isPresent();
+            skillRespecPill$resetButton.active = hasActivePage;
+            skillRespecPill$resetButton.visible = hasActivePage;
+            skillRespecPill$resetButton.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        }
+    }
+
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true, remap = false, require = 1)
+    private void skillRespecPill$clickResetButton(
+            MouseButtonEvent event,
+            boolean doubleClick,
+            CallbackInfoReturnable<Boolean> callback) {
+        if (skillRespecPill$resetButton != null
+                && skillRespecPill$resetButton.visible
+                && skillRespecPill$resetButton.mouseClicked(event, doubleClick)) {
+            callback.setReturnValue(true);
         }
     }
 
