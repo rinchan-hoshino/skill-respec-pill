@@ -1,5 +1,7 @@
 # Skill Respec Pill
 
+![Skill Respec Pill icon](docs/icon.png)
+
 中文名：技能后悔药
 
 面向 Minecraft 1.21.1 的 Fabric + NeoForge 多加载器模组，为 Puffish Skills 0.18.3 提供服务端权威的批量前置购买、级联退还和整页重置。
