@@ -3,7 +3,8 @@
 ## 1.0.1
 
 - Correct the public English display name to **Skill Respec Pill**; `技能后悔药` remains the Simplified Chinese localized name.
-- Keep every gameplay, policy, persistence and networking contract unchanged from 1.0.0.
+- Match the NeoForge RinLib dependency to its internal `1.0.0` mod version instead of its platform-qualified artifact version.
+- Keep every gameplay, policy, persistence and networking contract unchanged from 1.0.0, including the `1.0.0` NeoForge network protocol.
 
 ## 1.0.0
 

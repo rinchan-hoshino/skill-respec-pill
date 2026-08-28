@@ -50,8 +50,8 @@ for loader, jar in JARS.items():
             require('displayName="Skill Respec Pill"' in metadata, "NeoForge display identity changed")
             require('modId="puffish_skills"' in metadata and 'versionRange="[0.18.3]"' in metadata,
                     "NeoForge Puffish dependency is not exact")
-            require('modId="rinlib"' in metadata and 'versionRange="[1.0.0+1.21.1]"' in metadata,
-                    "NeoForge RinLib dependency is not exact")
+            require('modId="rinlib"' in metadata and 'versionRange="[1.0.0]"' in metadata,
+                    "NeoForge RinLib runtime version is not exact")
     digest = hashlib.sha256(jar.read_bytes()).hexdigest()
     print(f"{loader}: {jar.relative_to(ROOT)} sha256={digest}")
 
