@@ -31,7 +31,7 @@ side="BOTH"
 [[dependencies.${mod_id}]]
 modId="rinlib"
 type="required"
-versionRange="[${rinlib_runtime_version}]"
+versionRange="[${rinlib_neoforge_runtime_version}]"
 ordering="AFTER"
 side="BOTH" # mandatory-runtime
 

@@ -63,6 +63,8 @@ final class StaticContractsTest {
         assertTrue(properties.contains("puffish_skills_neoforge_file=8547654"));
         assertTrue(properties.contains("rinlib_fabric_version=1.0.0+1.21.1-fabric"));
         assertTrue(properties.contains("rinlib_neoforge_version=1.0.0+1.21.1-neoforge"));
+        assertTrue(properties.contains("rinlib_runtime_version=1.0.0+1.21.1"));
+        assertTrue(properties.contains("rinlib_neoforge_runtime_version=1.0.0"));
 
         String fabricBuild = read("fabric/build.gradle");
         String neoBuild = read("neoforge/build.gradle");
@@ -70,6 +72,7 @@ final class StaticContractsTest {
         assertTrue(fabricBuild.contains("rinlib_fabric_version"));
         assertTrue(neoBuild.contains("puffish_skills_neoforge_file"));
         assertTrue(neoBuild.contains("rinlib_neoforge_version"));
+        assertTrue(neoBuild.contains("rinlib_neoforge_runtime_version"));
 
         var fabric = JsonParser.parseString(read("fabric/src/main/resources/fabric.mod.json")).getAsJsonObject();
         assertEquals("${mod_id}", fabric.get("id").getAsString());
@@ -85,7 +88,7 @@ final class StaticContractsTest {
         String mods = read("neoforge/src/main/templates/META-INF/neoforge.mods.toml");
         assertTrue(mods.contains("displayName=\"${mod_name}\""));
         assertTrue(mods.contains("license=\"${mod_license}\""));
-        assertTrue(mods.contains("versionRange=\"[${rinlib_runtime_version}]\""));
+        assertTrue(mods.contains("versionRange=\"[${rinlib_neoforge_runtime_version}]\""));
         assertTrue(mods.contains("versionRange=\"[${puffish_skills_version}]\""));
         assertEquals(2, count(mods, "side=\"BOTH\" # mandatory-runtime"));
     }

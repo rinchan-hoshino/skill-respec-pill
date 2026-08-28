@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- Match the NeoForge RinLib dependency to its internal `1.0.0` mod version instead of its platform-qualified artifact version.
+- Keep gameplay code, display identity, Fabric metadata and the `1.0.0` NeoForge network protocol unchanged.
+
 ## 1.0.0
 
 - Add server-authoritative batch prerequisite purchasing with exact aggregate cost checks.
