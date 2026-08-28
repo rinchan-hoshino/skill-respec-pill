@@ -1,4 +1,6 @@
-# 技能后悔药（Skill Respec Pill）
+# Skill Respec Pill
+
+中文名：技能后悔药
 
 面向 Minecraft 26.2 的 Fabric + NeoForge 多加载器模组，为 Puffish Skills 0.18.3 提供服务端权威的批量前置购买、级联退还和整页重置。
 
@@ -29,7 +31,7 @@
 - Fabric：`config/skill_respec_pill.properties`
 - NeoForge：`config/skill_respec_pill-server.toml`
 
-策略数据包路径与 1.0.0 相同：
+策略数据包路径自1.0起保持稳定：
 
 ```text
 data/<namespace>/skill_respec_pill/policies/*.json

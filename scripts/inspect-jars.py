@@ -6,8 +6,8 @@ from zipfile import ZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
 JARS = {
-    "fabric": ROOT / "fabric/build/libs/skill_respec_pill-fabric-1.0.0.jar",
-    "neoforge": ROOT / "neoforge/build/libs/skill_respec_pill-neoforge-1.0.0.jar",
+    "fabric": ROOT / "fabric/build/libs/skill_respec_pill-fabric-1.0.1.jar",
+    "neoforge": ROOT / "neoforge/build/libs/skill_respec_pill-neoforge-1.0.1.jar",
 }
 COMMON_ENTRIES = {
     "dev/rinchan/skillrespecpill/api/SkillRespecPillApi.class",
@@ -37,7 +37,7 @@ for loader, jar in JARS.items():
             require("META-INF/neoforge.mods.toml" not in names, "Fabric JAR contains NeoForge metadata")
             metadata = json.loads(archive.read("fabric.mod.json"))
             require(metadata["id"] == "skill_respec_pill", "Fabric mod id changed")
-            require(metadata["name"] == "技能后悔药", "Fabric display identity changed")
+            require(metadata["name"] == "Skill Respec Pill", "Fabric display identity changed")
             require(metadata["environment"] == "*", "Fabric is not client+server")
             require(metadata["depends"]["fabric-api"] == "*", "Fabric API is not mandatory")
             require(metadata["depends"]["puffish_skills"] == "=0.18.3", "Fabric Puffish version is not exact")
@@ -47,7 +47,7 @@ for loader, jar in JARS.items():
             require("fabric.mod.json" not in names, "NeoForge JAR contains Fabric metadata")
             metadata = archive.read("META-INF/neoforge.mods.toml").decode()
             require('modId="skill_respec_pill"' in metadata, "NeoForge mod id changed")
-            require('displayName="技能后悔药"' in metadata, "NeoForge display identity changed")
+            require('displayName="Skill Respec Pill"' in metadata, "NeoForge display identity changed")
             require('modId="puffish_skills"' in metadata and 'versionRange="[0.18.3]"' in metadata,
                     "NeoForge Puffish dependency is not exact")
             require('modId="rinlib"' in metadata and 'versionRange="[1.0.0]"' in metadata,
