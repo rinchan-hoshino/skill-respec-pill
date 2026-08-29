@@ -12,7 +12,7 @@ final class NodeCostTooltipTest {
         var display = NodeCostTooltip.describe(30, 80, NodeCostTooltip.Flow.DEBIT);
 
         assertEquals(30, display.nodeCost());
-        assertEquals("⁽⁻⁸⁰⁾", display.totalBadge());
+        assertEquals("-80", display.totalBadge());
         assertEquals(NodeCostTooltip.BadgeColor.RED, display.badgeColor());
     }
 
@@ -21,7 +21,7 @@ final class NodeCostTooltipTest {
         var display = NodeCostTooltip.describe(50, 130, NodeCostTooltip.Flow.CREDIT);
 
         assertEquals(50, display.nodeCost());
-        assertEquals("⁽⁺¹³⁰⁾", display.totalBadge());
+        assertEquals("+130", display.totalBadge());
         assertEquals(NodeCostTooltip.BadgeColor.GREEN, display.badgeColor());
     }
 

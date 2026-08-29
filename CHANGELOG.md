@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.5
+
+- Replaced the textual node-cost line and Unicode superscript total with a number-only custom tooltip component.
+- Node cost now renders in light gray at normal size; batch debit and cascade credit render as genuinely scaled red/green badges at its upper right.
+
 ## 1.0.4
 
 - Show each hovered node's own cost in light gray at the existing tooltip position.

@@ -17,6 +17,8 @@ final class StaticContractsTest {
     void sharedMixinsOwnAuthoritativeSemanticsAndNativeButtonHooks() throws IOException {
         String server = read("common/src/main/java/dev/rinchan/skillrespecpill/mixin/SkillsModMixin.java");
         String screen = read("common/src/main/java/dev/rinchan/skillrespecpill/mixin/SkillsScreenMixin.java");
+        String tooltipRenderer = read(
+                "common/src/main/java/dev/rinchan/skillrespecpill/client/NodeCostTooltipComponent.java");
         String mixins = read("common/src/main/resources/skill_respec_pill.mixins.json");
 
         assertTrue(server.contains("method = \"watchNewPoints\""));
@@ -30,11 +32,16 @@ final class StaticContractsTest {
         assertTrue(screen.contains("Skill.State.AVAILABLE"));
         assertTrue(screen.contains("lambda$drawContentWithCategory$21"));
         assertTrue(screen.contains("BatchPreview"));
-        assertTrue(screen.contains("NodeCostTooltip"));
+        assertTrue(screen.contains("NodeCostTooltipSequence"));
         assertTrue(screen.contains("definition.cost()"));
-        assertTrue(screen.contains("ChatFormatting.GRAY"));
-        assertTrue(screen.contains("ChatFormatting.RED"));
-        assertTrue(screen.contains("ChatFormatting.GREEN"));
+        assertFalse(screen.contains("tooltip.skill_respec_pill.node_cost"));
+        assertFalse(screen.contains("ChatFormatting"));
+        assertTrue(tooltipRenderer.contains("BADGE_SCALE = 0.65F"));
+        assertTrue(tooltipRenderer.contains("badgeMatrix.translate"));
+        assertTrue(tooltipRenderer.contains("badgeMatrix.scale(BADGE_SCALE"));
+        assertTrue(tooltipRenderer.contains("LIGHT_GRAY"));
+        assertTrue(tooltipRenderer.contains("RED"));
+        assertTrue(tooltipRenderer.contains("GREEN"));
         assertTrue(screen.contains("Button.builder"));
         assertTrue(screen.contains("ClientNetworking.send"));
         assertTrue(screen.contains("method = \"render\""));
@@ -47,6 +54,8 @@ final class StaticContractsTest {
         assertFalse(screen.contains("net.neoforged"));
         assertFalse(screen.contains("net.fabricmc"));
         assertTrue(mixins.contains("SkillsModAccessor"));
+        assertTrue(mixins.contains("ClientTextTooltipAccessor"));
+        assertTrue(mixins.contains("GuiGraphicsMixin"));
     }
 
     @Test
@@ -182,7 +191,7 @@ final class StaticContractsTest {
         var zh = JsonParser.parseString(read(
                 "common/src/main/resources/assets/skill_respec_pill/lang/zh_cn.json")).getAsJsonObject();
         assertEquals("重置本页", zh.get("screen.skill_respec_pill.reset_page").getAsString());
-        assertEquals("消耗：%s", zh.get("tooltip.skill_respec_pill.node_cost").getAsString());
+        assertFalse(zh.has("tooltip.skill_respec_pill.node_cost"));
         assertFalse(zh.has("tooltip.skill_respec_pill.batch_unlock"));
         assertFalse(zh.has("tooltip.skill_respec_pill.cascade_refund"));
         assertTrue(read("common/src/main/java/dev/rinchan/skillrespecpill/mixin/SkillsScreenMixin.java")

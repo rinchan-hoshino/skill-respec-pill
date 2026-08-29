@@ -3,12 +3,12 @@ package dev.rinchan.skillrespecpill.mixin;
 import dev.rinchan.skillrespecpill.client.BatchPreview;
 import dev.rinchan.skillrespecpill.client.ClientPolicyState;
 import dev.rinchan.skillrespecpill.client.NodeCostTooltip;
+import dev.rinchan.skillrespecpill.client.NodeCostTooltipSequence;
 import dev.rinchan.skillrespecpill.network.PolicyRequestPayload;
 import dev.rinchan.skillrespecpill.network.ResetPagePayload;
 import dev.rinchan.skillrespecpill.platform.ClientNetworking;
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -121,15 +121,7 @@ public abstract class SkillsScreenMixin extends Screen {
             case FORCED, CASCADE_DISABLED, INVALID_GRAPH -> NodeCostTooltip.Flow.NONE;
         };
         NodeCostTooltip.Display display = NodeCostTooltip.describe(definition.cost(), preview.points(), flow);
-        Component line = Component.translatable("tooltip.skill_respec_pill.node_cost", display.nodeCost())
-                .withStyle(ChatFormatting.GRAY);
-        if (display.hasTotalBadge()) {
-            ChatFormatting badgeColor = display.badgeColor() == NodeCostTooltip.BadgeColor.RED
-                    ? ChatFormatting.RED
-                    : ChatFormatting.GREEN;
-            line = line.copy().append(Component.literal(" " + display.totalBadge()).withStyle(badgeColor));
-        }
-        lines.add(line.getVisualOrderText());
+        lines.add(new NodeCostTooltipSequence(display));
         this.setTooltipForNextRenderPass(lines);
     }
 }

@@ -21,7 +21,11 @@ COMMON_ENTRIES = {
     "dev/rinchan/skillrespecpill/api/SkillRespecPillApi.class",
     "dev/rinchan/skillrespecpill/graph/SkillGraph.class",
     "dev/rinchan/skillrespecpill/client/NodeCostTooltip.class",
+    "dev/rinchan/skillrespecpill/client/NodeCostTooltipComponent.class",
+    "dev/rinchan/skillrespecpill/client/NodeCostTooltipSequence.class",
     "dev/rinchan/skillrespecpill/service/RespecService.class",
+    "dev/rinchan/skillrespecpill/mixin/ClientTextTooltipAccessor.class",
+    "dev/rinchan/skillrespecpill/mixin/GuiGraphicsMixin.class",
     "dev/rinchan/skillrespecpill/mixin/SkillsModMixin.class",
     "dev/rinchan/skillrespecpill/mixin/SkillsScreenMixin.class",
     "assets/skill_respec_pill/lang/zh_cn.json",
@@ -42,21 +46,24 @@ for loader, jar in JARS.items():
                 f"{loader} JAR contains forbidden WMF scope")
         zh = json.loads(archive.read("assets/skill_respec_pill/lang/zh_cn.json"))
         en = json.loads(archive.read("assets/skill_respec_pill/lang/en_us.json"))
-        require(zh["tooltip.skill_respec_pill.node_cost"] == "消耗：%s",
-                f"{loader} Chinese local-cost line changed")
-        require(en["tooltip.skill_respec_pill.node_cost"] == "Cost: %s",
-                f"{loader} English local-cost line changed")
         for stale_key in (
+                "tooltip.skill_respec_pill.node_cost",
                 "tooltip.skill_respec_pill.batch_unlock",
                 "tooltip.skill_respec_pill.cascade_refund"):
             require(stale_key not in zh and stale_key not in en,
-                    f"{loader} keeps the superseded full-line preview {stale_key}")
+                    f"{loader} keeps textual cost copy {stale_key}")
         screen_bytes = archive.read("dev/rinchan/skillrespecpill/mixin/SkillsScreenMixin.class")
-        for marker in (b"NodeCostTooltip", b"tooltip.skill_respec_pill.node_cost"):
-            require(marker in screen_bytes, f"{loader} screen misses node-cost marker {marker!r}")
-        if loader == "neoforge":
-            for marker in (b"GRAY", b"RED", b"GREEN"):
-                require(marker in screen_bytes, f"{loader} screen misses tooltip color {marker!r}")
+        require(b"NodeCostTooltipSequence" in screen_bytes,
+                f"{loader} screen misses the custom cost sequence")
+        require(b"tooltip.skill_respec_pill.node_cost" not in screen_bytes,
+                f"{loader} screen still renders a textual cost line")
+        component_bytes = archive.read(
+            "dev/rinchan/skillrespecpill/client/NodeCostTooltipComponent.class")
+        for marker in (b"BADGE_SCALE", b"BADGE_Y_OFFSET", b"LIGHT_GRAY", b"RED", b"GREEN"):
+            require(marker in component_bytes, f"{loader} custom renderer misses {marker!r}")
+        for unicode_badge in "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁽⁾":
+            require(unicode_badge.encode() not in component_bytes + screen_bytes,
+                    f"{loader} still encodes a fake superscript badge")
         for stale_key in (
                 "tooltip.skill_respec_pill.forced",
                 "tooltip.skill_respec_pill.cascade_disabled",
