@@ -2,6 +2,7 @@ package dev.rinchan.skillrespecpill.mixin;
 
 import dev.rinchan.skillrespecpill.client.BatchPreview;
 import dev.rinchan.skillrespecpill.client.ClientPolicyState;
+import dev.rinchan.skillrespecpill.client.NodeCostTooltip;
 import dev.rinchan.skillrespecpill.network.PolicyRequestPayload;
 import dev.rinchan.skillrespecpill.network.ResetPagePayload;
 import dev.rinchan.skillrespecpill.platform.ClientNetworking;
@@ -16,6 +17,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.puffish.skillsmod.api.Skill;
 import net.puffish.skillsmod.client.config.ClientCategoryConfig;
 import net.puffish.skillsmod.client.config.skill.ClientSkillConfig;
+import net.puffish.skillsmod.client.config.skill.ClientSkillDefinitionConfig;
 import net.puffish.skillsmod.client.data.ClientCategoryData;
 import net.puffish.skillsmod.client.gui.SkillsScreen;
 import net.puffish.skillsmod.client.rendering.ConnectionBatchedRenderer;
@@ -111,17 +113,23 @@ public abstract class SkillsScreenMixin extends Screen {
             ConnectionBatchedRenderer connectionRenderer,
             GuiGraphics graphics,
             ClientSkillConfig skill) {
+        ClientSkillDefinitionConfig definition = config.getDefinitionById(skill.definitionId()).orElseThrow();
         BatchPreview.Preview preview = BatchPreview.forNode(config, data, skill);
-        Component line = switch (preview.action()) {
-            case UNLOCK -> Component.translatable(
-                            "tooltip.skill_respec_pill.batch_unlock", preview.points())
-                    .withStyle(ChatFormatting.RED);
-            case REFUND -> Component.translatable(
-                            "tooltip.skill_respec_pill.cascade_refund", preview.points())
-                    .withStyle(ChatFormatting.GREEN);
-            case FORCED, CASCADE_DISABLED, INVALID_GRAPH -> null;
+        NodeCostTooltip.Flow flow = switch (preview.action()) {
+            case UNLOCK -> NodeCostTooltip.Flow.DEBIT;
+            case REFUND -> NodeCostTooltip.Flow.CREDIT;
+            case FORCED, CASCADE_DISABLED, INVALID_GRAPH -> NodeCostTooltip.Flow.NONE;
         };
-        if (line != null) lines.add(line.getVisualOrderText());
+        NodeCostTooltip.Display display = NodeCostTooltip.describe(definition.cost(), preview.points(), flow);
+        Component line = Component.translatable("tooltip.skill_respec_pill.node_cost", display.nodeCost())
+                .withStyle(ChatFormatting.GRAY);
+        if (display.hasTotalBadge()) {
+            ChatFormatting badgeColor = display.badgeColor() == NodeCostTooltip.BadgeColor.RED
+                    ? ChatFormatting.RED
+                    : ChatFormatting.GREEN;
+            line = line.copy().append(Component.literal(" " + display.totalBadge()).withStyle(badgeColor));
+        }
+        lines.add(line.getVisualOrderText());
         this.setTooltipForNextRenderPass(lines);
     }
 }

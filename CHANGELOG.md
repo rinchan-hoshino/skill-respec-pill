@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4
+
+- Show each hovered node's own cost in light gray at the existing tooltip position.
+- Keep the actual batch unlock debit or cascade-refund credit as a compact red or green superscript badge on the same line.
+
 ## 1.0.3
 
 - Restore compact signed batch previews: `(-points)` to unlock and `(+points)` to refund, with no duplicate prose.

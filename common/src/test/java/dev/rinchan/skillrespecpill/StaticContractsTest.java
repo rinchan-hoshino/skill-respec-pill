@@ -30,6 +30,11 @@ final class StaticContractsTest {
         assertTrue(screen.contains("Skill.State.AVAILABLE"));
         assertTrue(screen.contains("lambda$drawContentWithCategory$21"));
         assertTrue(screen.contains("BatchPreview"));
+        assertTrue(screen.contains("NodeCostTooltip"));
+        assertTrue(screen.contains("definition.cost()"));
+        assertTrue(screen.contains("ChatFormatting.GRAY"));
+        assertTrue(screen.contains("ChatFormatting.RED"));
+        assertTrue(screen.contains("ChatFormatting.GREEN"));
         assertTrue(screen.contains("Button.builder"));
         assertTrue(screen.contains("ClientNetworking.send"));
         assertTrue(screen.contains("method = \"render\""));
@@ -177,10 +182,11 @@ final class StaticContractsTest {
         var zh = JsonParser.parseString(read(
                 "common/src/main/resources/assets/skill_respec_pill/lang/zh_cn.json")).getAsJsonObject();
         assertEquals("重置本页", zh.get("screen.skill_respec_pill.reset_page").getAsString());
-        assertEquals("（-%s）", zh.get("tooltip.skill_respec_pill.batch_unlock").getAsString());
-        assertEquals("（+%s）", zh.get("tooltip.skill_respec_pill.cascade_refund").getAsString());
+        assertEquals("消耗：%s", zh.get("tooltip.skill_respec_pill.node_cost").getAsString());
+        assertFalse(zh.has("tooltip.skill_respec_pill.batch_unlock"));
+        assertFalse(zh.has("tooltip.skill_respec_pill.cascade_refund"));
         assertTrue(read("common/src/main/java/dev/rinchan/skillrespecpill/mixin/SkillsScreenMixin.java")
-                .contains("case FORCED, CASCADE_DISABLED, INVALID_GRAPH -> null"));
+                .contains("case FORCED, CASCADE_DISABLED, INVALID_GRAPH -> NodeCostTooltip.Flow.NONE"));
     }
 
     private static int count(String value, String needle) {

@@ -1,7 +1,6 @@
 {
   "screen.skill_respec_pill.reset_page": "Reset Page",
-  "tooltip.skill_respec_pill.batch_unlock": "(-%s)",
-  "tooltip.skill_respec_pill.cascade_refund": "(+%s)",
+  "tooltip.skill_respec_pill.node_cost": "Cost: %s",
   "message.skill_respec_pill.insufficient_points": "Completing this path costs %s points; only %s remain.",
   "message.skill_respec_pill.forced_skill": "This foundation is permanent and cannot be refunded.",
   "message.skill_respec_pill.cascade_disabled": "Cascade refunds are currently disabled.",

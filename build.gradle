@@ -21,6 +21,7 @@ sourceSets {
             include 'dev/rinchan/skillrespecpill/api/internal/**'
             include 'dev/rinchan/skillrespecpill/graph/GraphException.java'
             include 'dev/rinchan/skillrespecpill/graph/SkillGraph.java'
+            include 'dev/rinchan/skillrespecpill/client/NodeCostTooltip.java'
             include 'dev/rinchan/skillrespecpill/policy/SkillPolicy.java'
             include 'dev/rinchan/skillrespecpill/service/PointMutationContext.java'
             include 'dev/rinchan/skillrespecpill/state/DefaultGrantState.java'

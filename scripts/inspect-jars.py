@@ -20,6 +20,7 @@ JARS = {
 COMMON_ENTRIES = {
     "dev/rinchan/skillrespecpill/api/SkillRespecPillApi.class",
     "dev/rinchan/skillrespecpill/graph/SkillGraph.class",
+    "dev/rinchan/skillrespecpill/client/NodeCostTooltip.class",
     "dev/rinchan/skillrespecpill/service/RespecService.class",
     "dev/rinchan/skillrespecpill/mixin/SkillsModMixin.class",
     "dev/rinchan/skillrespecpill/mixin/SkillsScreenMixin.class",
@@ -41,14 +42,21 @@ for loader, jar in JARS.items():
                 f"{loader} JAR contains forbidden WMF scope")
         zh = json.loads(archive.read("assets/skill_respec_pill/lang/zh_cn.json"))
         en = json.loads(archive.read("assets/skill_respec_pill/lang/en_us.json"))
-        require(zh["tooltip.skill_respec_pill.batch_unlock"] == "（-%s）",
-                f"{loader} Chinese unlock preview is not one signed amount")
-        require(zh["tooltip.skill_respec_pill.cascade_refund"] == "（+%s）",
-                f"{loader} Chinese refund preview is not one signed amount")
-        require(en["tooltip.skill_respec_pill.batch_unlock"] == "(-%s)",
-                f"{loader} English unlock preview is not one signed amount")
-        require(en["tooltip.skill_respec_pill.cascade_refund"] == "(+%s)",
-                f"{loader} English refund preview is not one signed amount")
+        require(zh["tooltip.skill_respec_pill.node_cost"] == "消耗：%s",
+                f"{loader} Chinese local-cost line changed")
+        require(en["tooltip.skill_respec_pill.node_cost"] == "Cost: %s",
+                f"{loader} English local-cost line changed")
+        for stale_key in (
+                "tooltip.skill_respec_pill.batch_unlock",
+                "tooltip.skill_respec_pill.cascade_refund"):
+            require(stale_key not in zh and stale_key not in en,
+                    f"{loader} keeps the superseded full-line preview {stale_key}")
+        screen_bytes = archive.read("dev/rinchan/skillrespecpill/mixin/SkillsScreenMixin.class")
+        for marker in (b"NodeCostTooltip", b"tooltip.skill_respec_pill.node_cost"):
+            require(marker in screen_bytes, f"{loader} screen misses node-cost marker {marker!r}")
+        if loader == "neoforge":
+            for marker in (b"GRAY", b"RED", b"GREEN"):
+                require(marker in screen_bytes, f"{loader} screen misses tooltip color {marker!r}")
         for stale_key in (
                 "tooltip.skill_respec_pill.forced",
                 "tooltip.skill_respec_pill.cascade_disabled",
