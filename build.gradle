@@ -37,6 +37,7 @@ dependencies {
 
 tasks.named('test', Test) {
     useJUnitPlatform()
+    inputs.files(fileTree('common/src/main')).withPathSensitivity(PathSensitivity.RELATIVE)
 }
 
 tasks.named('jar') {

@@ -1,8 +1,10 @@
 {
   "screen.skill_respec_pill.reset_page": "Reset Page",
-  "tooltip.skill_respec_pill.batch_unlock": "Net cost: %s skill points",
-  "tooltip.skill_respec_pill.cascade_refund": "Net refund: %s skill points",
-  "tooltip.skill_respec_pill.forced": "Forced skill; cannot be refunded",
-  "tooltip.skill_respec_pill.cascade_disabled": "Cascade refund is disabled",
-  "tooltip.skill_respec_pill.invalid_graph": "Skill graph unavailable; action will be denied"
+  "tooltip.skill_respec_pill.batch_unlock": "(-%s)",
+  "tooltip.skill_respec_pill.cascade_refund": "(+%s)",
+  "message.skill_respec_pill.insufficient_points": "Completing this path costs %s points; only %s remain.",
+  "message.skill_respec_pill.forced_skill": "This foundation is permanent and cannot be refunded.",
+  "message.skill_respec_pill.cascade_disabled": "Cascade refunds are currently disabled.",
+  "message.skill_respec_pill.action_denied": "This skill action is currently unavailable.",
+  "message.skill_respec_pill.action_failed": "The skill action failed; contact an administrator."
 }

@@ -1,8 +1,10 @@
 {
   "screen.skill_respec_pill.reset_page": "重置本页",
-  "tooltip.skill_respec_pill.batch_unlock": "净消耗：%s 技能点",
-  "tooltip.skill_respec_pill.cascade_refund": "净返还：%s 技能点",
-  "tooltip.skill_respec_pill.forced": "强制技能，无法退还",
-  "tooltip.skill_respec_pill.cascade_disabled": "级联退还已禁用",
-  "tooltip.skill_respec_pill.invalid_graph": "技能图不可用；操作将被拒绝"
+  "tooltip.skill_respec_pill.batch_unlock": "（-%s）",
+  "tooltip.skill_respec_pill.cascade_refund": "（+%s）",
+  "message.skill_respec_pill.insufficient_points": "补齐需要 %s 点；当前仅余 %s 点。",
+  "message.skill_respec_pill.forced_skill": "这份根基已经属于你，无法退还。",
+  "message.skill_respec_pill.cascade_disabled": "当前不允许级联退还。",
+  "message.skill_respec_pill.action_denied": "当前无法执行这项技能操作。",
+  "message.skill_respec_pill.action_failed": "技能操作失败，请联系管理员。"
 }

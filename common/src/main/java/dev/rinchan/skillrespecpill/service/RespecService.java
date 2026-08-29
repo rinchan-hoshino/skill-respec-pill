@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.puffish.skillsmod.api.Category;
@@ -33,14 +34,26 @@ public final class RespecService {
         if (player.isSpectator()) return true;
         try {
             Category category = SkillsAPI.getCategory(categoryId).orElse(null);
-            if (category == null) return false;
+            if (category == null) {
+                sendFailure(player, "message.skill_respec_pill.action_failed");
+                return true;
+            }
             Skill skill = category.getSkill(nodeId).orElse(null);
-            if (skill == null) return false;
+            if (skill == null) {
+                sendFailure(player, "message.skill_respec_pill.action_failed");
+                return true;
+            }
             Optional<SkillPolicy> policy = PolicyRepository.find(player.getServer(), categoryId);
 
             if (skill.getState(player) == Skill.State.UNLOCKED) {
-                if (policy.map(value -> value.forcedEnabled().contains(nodeId)).orElse(false)) return true;
-                if (!SkillRespecConfig.cascadeRefundEnabled()) return false;
+                if (policy.map(value -> value.forcedEnabled().contains(nodeId)).orElse(false)) {
+                    sendFailure(player, "message.skill_respec_pill.forced_skill");
+                    return true;
+                }
+                if (!SkillRespecConfig.cascadeRefundEnabled()) {
+                    sendFailure(player, "message.skill_respec_pill.cascade_disabled");
+                    return true;
+                }
                 SkillGraph graph = validatedGraph(categoryId, policy);
                 if (!authorize(player, Action.CASCADE_REFUND, categoryId, Optional.of(nodeId))) return true;
                 SkillGraph.Plan plan = graph.refundPlan(nodeId, unlockedIds(category, player));
@@ -49,6 +62,7 @@ public final class RespecService {
                     SkillRespecPill.LOGGER.error(
                             "Cascade refund for {}:{} includes a forced node and was rejected",
                             categoryId, nodeId);
+                    sendFailure(player, "message.skill_respec_pill.forced_skill");
                     return true;
                 }
                 lockDescendantsFirst(player, category, plan.nodeIds());
@@ -60,6 +74,11 @@ public final class RespecService {
             SkillGraph.Plan plan = graph.unlockPlan(nodeId, unlockedIds(category, player));
             int pointsLeft = category.getPointsLeft(player);
             if (pointsLeft < plan.points()) {
+                sendFailure(
+                        player,
+                        "message.skill_respec_pill.insufficient_points",
+                        plan.points(),
+                        pointsLeft);
                 return true;
             }
             unlockTopologically(player, category, plan.nodeIds());
@@ -68,6 +87,7 @@ public final class RespecService {
             SkillRespecPill.LOGGER.error(
                     "Node action failed closed for category {} node {} player {}",
                     categoryId, nodeId, player.getGameProfile().getName(), exception);
+            sendFailure(player, "message.skill_respec_pill.action_failed");
             return true;
         }
     }
@@ -97,6 +117,7 @@ public final class RespecService {
             SkillRespecPill.LOGGER.error(
                     "Page reset failed closed for category {} player {}",
                     categoryId, player.getGameProfile().getName(), exception);
+            sendFailure(player, "message.skill_respec_pill.action_failed");
         }
     }
 
@@ -111,6 +132,7 @@ public final class RespecService {
         } catch (Exception exception) {
             SkillRespecPill.LOGGER.error(
                     "Forced-node policy lookup failed closed for {}:{}", categoryId, nodeId, exception);
+            sendFailure(player, "message.skill_respec_pill.action_failed");
             return true;
         }
     }
@@ -184,7 +206,10 @@ public final class RespecService {
             var authorization = SkillRespecPillApi.evaluate(
                     new GateContext(player, action, categoryId, nodeId));
             if (!authorization.allowed()) {
-                authorization.denialReason().ifPresent(reason -> player.displayClientMessage(reason, false));
+                sendFailure(
+                        player,
+                        authorization.denialReason().orElseGet(
+                                () -> Component.translatable("message.skill_respec_pill.action_denied")));
                 return false;
             }
             return true;
@@ -192,8 +217,17 @@ public final class RespecService {
             SkillRespecPill.LOGGER.error(
                     "Authorization gate failed closed for {} in category {} player {}",
                     action, categoryId, player.getGameProfile().getName(), exception);
+            sendFailure(player, "message.skill_respec_pill.action_failed");
             return false;
         }
+    }
+
+    private static void sendFailure(ServerPlayer player, String translationKey, Object... arguments) {
+        sendFailure(player, Component.translatable(translationKey, arguments));
+    }
+
+    private static void sendFailure(ServerPlayer player, Component message) {
+        player.displayClientMessage(message, false);
     }
 
     private static Set<String> unlockedIds(Category category, ServerPlayer player) {

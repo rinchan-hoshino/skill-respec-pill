@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3
+
+- Restore compact signed batch previews: `(-points)` to unlock and `(+points)` to refund, with no duplicate prose.
+- Send insufficient-points, forced-node, disabled-refund, denied-action and failed-action feedback to persistent chat instead of transient or hidden UI text.
+
 ## 1.0.2
 
 - Restore the visible, clickable **Reset Page** button on Puffish Skills 0.18.3 screens, whose custom render and mouse-input methods bypass vanilla screen widgets.

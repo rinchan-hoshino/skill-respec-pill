@@ -119,14 +119,9 @@ public abstract class SkillsScreenMixin extends Screen {
             case REFUND -> Component.translatable(
                             "tooltip.skill_respec_pill.cascade_refund", preview.points())
                     .withStyle(ChatFormatting.GREEN);
-            case FORCED -> Component.translatable("tooltip.skill_respec_pill.forced")
-                    .withStyle(ChatFormatting.GOLD);
-            case CASCADE_DISABLED -> Component.translatable("tooltip.skill_respec_pill.cascade_disabled")
-                    .withStyle(ChatFormatting.GRAY);
-            case INVALID_GRAPH -> Component.translatable("tooltip.skill_respec_pill.invalid_graph")
-                    .withStyle(ChatFormatting.DARK_RED);
+            case FORCED, CASCADE_DISABLED, INVALID_GRAPH -> null;
         };
-        lines.add(line.getVisualOrderText());
+        if (line != null) lines.add(line.getVisualOrderText());
         this.setTooltipForNextRenderPass(lines);
     }
 }
