@@ -47,17 +47,19 @@ final class StaticContractsTest {
     }
 
     @Test
-    void insufficientPointsIsSilentAndMutationHappensOnlyAfterServerPreflight() throws IOException {
+    void rejectedActionsWritePersistentChatErrorsBeforeAnyMutation() throws IOException {
         String service = read("common/src/main/java/dev/rinchan/skillrespecpill/service/RespecService.java");
         int check = service.indexOf("pointsLeft < plan.points()");
         int mutation = service.indexOf("unlockTopologically");
 
         assertTrue(check >= 0 && mutation > check);
         String insufficientBranch = service.substring(check, mutation);
-        assertFalse(insufficientBranch.contains("displayClientMessage"));
-        assertFalse(insufficientBranch.contains("sendSystemMessage"));
-        assertFalse(insufficientBranch.contains("toast"));
-        assertFalse(insufficientBranch.contains("actionbar"));
+        assertTrue(insufficientBranch.contains("message.skill_respec_pill.insufficient_points"));
+        assertTrue(service.contains("message.skill_respec_pill.forced_skill"));
+        assertTrue(service.contains("message.skill_respec_pill.cascade_disabled"));
+        assertTrue(service.contains("message.skill_respec_pill.action_failed"));
+        assertTrue(service.contains("sendSystemMessage(message)"));
+        assertFalse(service.contains("actionbar"));
     }
 
     @Test
@@ -198,6 +200,10 @@ final class StaticContractsTest {
         var zh = JsonParser.parseString(read(
                 "common/src/main/resources/assets/skill_respec_pill/lang/zh_cn.json")).getAsJsonObject();
         assertEquals("重置本页", zh.get("screen.skill_respec_pill.reset_page").getAsString());
+        assertEquals("（-%s）", zh.get("tooltip.skill_respec_pill.batch_unlock").getAsString());
+        assertEquals("（+%s）", zh.get("tooltip.skill_respec_pill.cascade_refund").getAsString());
+        assertTrue(read("common/src/main/java/dev/rinchan/skillrespecpill/mixin/SkillsScreenMixin.java")
+                .contains("case FORCED, CASCADE_DISABLED, INVALID_GRAPH -> null"));
     }
 
     private static int count(String value, String needle) {
