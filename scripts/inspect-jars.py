@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import hashlib
 import json
+import re
+import subprocess
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -37,6 +39,30 @@ for loader, jar in JARS.items():
         require(not missing, f"{loader} JAR missing common entries: {sorted(missing)}")
         require(not any(name.startswith("wmf") or "/wmf" in name for name in names),
                 f"{loader} JAR contains forbidden WMF scope")
+        zh = json.loads(archive.read("assets/skill_respec_pill/lang/zh_cn.json"))
+        en = json.loads(archive.read("assets/skill_respec_pill/lang/en_us.json"))
+        require(zh["tooltip.skill_respec_pill.batch_unlock"] == "（-%s）",
+                f"{loader} Chinese unlock preview is not one signed amount")
+        require(zh["tooltip.skill_respec_pill.cascade_refund"] == "（+%s）",
+                f"{loader} Chinese refund preview is not one signed amount")
+        require(en["tooltip.skill_respec_pill.batch_unlock"] == "(-%s)",
+                f"{loader} English unlock preview is not one signed amount")
+        require(en["tooltip.skill_respec_pill.cascade_refund"] == "(+%s)",
+                f"{loader} English refund preview is not one signed amount")
+        for stale_key in (
+                "tooltip.skill_respec_pill.forced",
+                "tooltip.skill_respec_pill.cascade_disabled",
+                "tooltip.skill_respec_pill.invalid_graph"):
+            require(stale_key not in zh and stale_key not in en,
+                    f"{loader} keeps transient error tooltip {stale_key}")
+        service_bytes = archive.read("dev/rinchan/skillrespecpill/service/RespecService.class")
+        for message_key in (
+                b"message.skill_respec_pill.insufficient_points",
+                b"message.skill_respec_pill.forced_skill",
+                b"message.skill_respec_pill.cascade_disabled",
+                b"message.skill_respec_pill.action_denied",
+                b"message.skill_respec_pill.action_failed"):
+            require(message_key in service_bytes, f"{loader} service misses chat error {message_key!r}")
         if loader == "fabric":
             require("fabric.mod.json" in names, "Fabric metadata missing")
             require("skill_respec_pill.fabric.mixins.json" in names, "Fabric persistence mixin metadata missing")
@@ -58,6 +84,21 @@ for loader, jar in JARS.items():
                     "NeoForge Puffish dependency is not exact")
             require('modId="rinlib"' in metadata and 'versionRange="[1.0.0]"' in metadata,
                     "NeoForge RinLib dependency is not exact")
+    bytecode = subprocess.run(
+        ["javap", "-p", "-c", "-classpath", str(jar),
+         "dev.rinchan.skillrespecpill.service.RespecService"],
+        check=True, capture_output=True, text=True).stdout
+    match = re.search(
+        r"private static void sendFailure\([^;]+Component\);\s+Code:(.*?)(?=\n  (?:public|private|protected)|\Z)",
+        bytecode, re.DOTALL)
+    require(match is not None, f"{loader} JAR lacks the centralized chat delivery helper")
+    delivery = match.group(1)
+    if PROPERTIES["minecraft_version"] == "1.21.1":
+        require("displayClientMessage" in delivery and "iconst_0" in delivery,
+                f"{loader} 1.21.1 errors are not persistent chat messages")
+    else:
+        require("sendSystemMessage" in delivery,
+                f"{loader} modern errors are not persistent chat messages")
     digest = hashlib.sha256(jar.read_bytes()).hexdigest()
     print(f"{loader}: {jar.relative_to(ROOT)} sha256={digest}")
 
