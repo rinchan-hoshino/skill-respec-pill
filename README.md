@@ -3,7 +3,6 @@
 <!-- PROJECT_PAGE_START -->
 A configurable server-side respec system for SkillTree: buy prerequisite chains, refund dependent skills safely, or reset a whole page under datapack-controlled policy.
 
-![Skill Respec Pill workflow](docs/overview.png)
 
 ## Player actions
 
