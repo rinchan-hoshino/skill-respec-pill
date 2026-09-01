@@ -1,10 +1,32 @@
 # Skill Respec Pill
 
-![Skill Respec Pill icon](docs/icon.png)
+<!-- PROJECT_PAGE_START -->
+A configurable server-side respec system for SkillTree: buy prerequisite chains, refund dependent skills safely, or reset a whole page under datapack-controlled policy.
 
-中文名：技能后悔药
+![Skill Respec Pill workflow](docs/overview.png)
 
-面向 Minecraft 1.21.1 的 Fabric + NeoForge 多加载器模组，为 Puffish Skills 0.18.3 提供服务端权威的批量前置购买、级联退还和整页重置。
+## Player actions
+
+- **Respec Pill:** buys a target skill and any missing prerequisites.
+- **Cascade Pill:** refunds a skill together with learned dependents.
+- **Oblivion Pill:** resets a whole skill page and refunds spent points.
+
+## Server rules
+
+All mutations are server-authoritative. Datapacks can control allowed pages, costs, refunds, binding requirements and transaction limits. A failed transaction changes nothing.
+
+## Compatibility
+
+Available for the supported Fabric and NeoForge versions listed on the platform Versions page. SkillTree and RinLib are required; Fabric builds also require Fabric API.
+
+## Download and support
+
+Use the platform Versions page for exact game-version and loader files. Report reproducible problems through the project GitHub Issues page.
+<!-- PROJECT_PAGE_END -->
+
+---
+
+## Additional technical details
 
 ## 架构
 
